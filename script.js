@@ -75,6 +75,7 @@
     if (!gate || !gate.hidden) return;
     // Play must be requested directly from the tap/click for mobile browsers.
     if (withMusic && audio?.paused) toggleMusic();
+    if (!withMusic && !hasOpened && audio && !audio.paused) audio.pause();
     gate.hidden = false;
     gate.classList.remove('is-opening', 'is-leaving');
     document.body.classList.add('gate-active');
