@@ -30,6 +30,9 @@
   const audio = document.getElementById('wedding-audio');
   const musicToggle = document.getElementById('music-toggle');
   const openInvitation = document.getElementById('open-invitation');
+  const openSilent = document.getElementById('open-silent');
+  const gate = document.getElementById('invitation-gate');
+  const gateSkip = document.getElementById('gate-skip');
   const musicLabel = musicToggle?.querySelector('.music-label');
   const musicSrc = data.musicSrc?.trim();
   if (audio && musicSrc) {
@@ -37,15 +40,14 @@
     audio.volume = 0.32;
   } else {
     if (musicToggle) musicToggle.hidden = true;
-    if (openInvitation) openInvitation.hidden = true;
+    if (openSilent) openSilent.hidden = true;
+    if (openInvitation) openInvitation.querySelector('.open-label').textContent = 'Mở thiệp';
   }
   const syncMusic = () => {
     const playing = audio && !audio.paused;
     musicToggle?.setAttribute('aria-pressed', String(Boolean(playing)));
     musicToggle?.setAttribute('aria-label', playing ? 'Tắt nhạc nền' : 'Bật nhạc nền');
     if (musicLabel) musicLabel.textContent = playing ? 'Tắt nhạc' : 'Bật nhạc';
-    openInvitation?.classList.toggle('is-playing', Boolean(playing));
-    if (openInvitation) openInvitation.querySelector('span:nth-child(2)').textContent = playing ? 'Thiệp đã mở · Tắt nhạc' : 'Mở thiệp & bật nhạc';
   };
   const toggleMusic = async () => {
     if (!audio || !musicSrc) return;
@@ -54,10 +56,39 @@
     catch { musicToggle?.setAttribute('aria-label', 'Không thể phát nhạc, chạm để thử lại'); }
   };
   musicToggle?.addEventListener('click', toggleMusic);
-  openInvitation?.addEventListener('click', () => {
+  let hasOpened = false;
+  let gateTimers = [];
+  const clearGateTimers = () => { gateTimers.forEach(window.clearTimeout); gateTimers = []; };
+  const finishGate = () => {
+    if (!gate || gate.hidden) return;
+    clearGateTimers();
+    gate.hidden = true;
+    gate.classList.remove('is-opening', 'is-leaving');
+    document.body.classList.remove('gate-active');
     document.querySelector('.hero')?.classList.add('is-open');
-    toggleMusic();
-  });
+    hasOpened = true;
+    if (openInvitation) openInvitation.querySelector('.open-label').textContent = 'Xem lại hiệu ứng mở thiệp';
+    if (openSilent) openSilent.hidden = true;
+    openInvitation?.focus({ preventScroll: true });
+  };
+  const launchGate = (withMusic) => {
+    if (!gate || !gate.hidden) return;
+    // Play must be requested directly from the tap/click for mobile browsers.
+    if (withMusic && audio?.paused) toggleMusic();
+    gate.hidden = false;
+    gate.classList.remove('is-opening', 'is-leaving');
+    document.body.classList.add('gate-active');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finishGate(); return; }
+    gate.classList.add('is-opening');
+    gateSkip?.focus({ preventScroll: true });
+    const mobile = window.matchMedia('(max-width: 760px)').matches;
+    gateTimers.push(window.setTimeout(() => gate.classList.add('is-leaving'), mobile ? 980 : 1300));
+    gateTimers.push(window.setTimeout(finishGate, mobile ? 1350 : 1700));
+  };
+  openInvitation?.addEventListener('click', () => launchGate(!hasOpened));
+  openSilent?.addEventListener('click', () => launchGate(false));
+  gateSkip?.addEventListener('click', finishGate);
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && gate && !gate.hidden) finishGate(); });
   audio?.addEventListener('play', syncMusic);
   audio?.addEventListener('pause', syncMusic);
   audio?.addEventListener('ended', syncMusic);
