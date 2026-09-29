@@ -19,8 +19,12 @@
   setText('bride-name', data.bride);
   setText('groom-name', data.groom);
   setText('hero-message', data.heroMessage);
-  setText('hero-date', text(data.dateLine, 'Ngày cưới đang được cập nhật'));
-  setText('hero-location', text(data.locationLine, 'Địa điểm sẽ được thông báo'));
+  setText('hero-date', text(data.dateLine, 'Thông tin ngày cưới sẽ được cập nhật'));
+  const heroLocation = document.getElementById('hero-location');
+  if (heroLocation) {
+    heroLocation.hidden = !data.locationLine?.trim();
+    if (!heroLocation.hidden) heroLocation.textContent = data.locationLine;
+  }
   setText('invitation-message', data.invitationMessage);
   setText('story-message', data.storyMessage);
   for (const id of ['signature', 'closing-signature', 'footer-names']) {
@@ -51,12 +55,19 @@
     head.append(make('span', 'event-number', String(index + 1).padStart(2, '0')), make('span', 'eyebrow', event.label || 'THE CELEBRATION'));
     const body = make('div', 'event-card-body');
     body.append(make('h3', '', event.title));
-    const date = make('p', 'event-date', text(event.date, 'Ngày tổ chức đang được cập nhật'));
+    const hasDetails = [event.date, event.arrival, event.start, event.venue, event.address].some(value => value?.trim());
+    if (!hasDetails) {
+      body.append(make('p', 'event-pending', 'Ngày, giờ và địa điểm sẽ được cập nhật.'));
+      card.append(head, body);
+      eventList.append(card);
+      return;
+    }
+    const date = make('p', 'event-date', text(event.date, 'Ngày tổ chức sẽ được cập nhật'));
     const timing = make('div', 'event-timing');
     if (event.arrival) timing.append(make('p', '', `Đón khách · ${event.arrival}`));
     if (event.start) timing.append(make('p', '', `Bắt đầu · ${event.start}`));
     const venue = make('div', 'event-venue');
-    venue.append(make('strong', '', text(event.venue, 'Địa điểm sẽ được thông báo')));
+    venue.append(make('strong', '', text(event.venue, 'Địa điểm sẽ được cập nhật')));
     if (event.address) venue.append(make('span', '', event.address));
     body.append(date, timing, venue);
     if (event.mapUrl) {
@@ -72,6 +83,7 @@
 
   const photoGrid = document.getElementById('photo-grid');
   if (data.photos?.length) {
+    photoGrid.classList.remove('is-placeholder');
     photoGrid.replaceChildren();
     data.photos.forEach((photo, index) => {
       const figure = make('figure', `photo-card ${index % 3 === 0 ? 'photo-card-large' : 'photo-card-small'}`);
