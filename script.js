@@ -42,9 +42,9 @@
     image.src = data.heroPhoto;
     image.alt = `Ảnh cưới của ${data.bride} và ${data.groom}`;
     image.fetchPriority = 'high';
+    image.addEventListener('load', () => heroFrame.classList.add('has-photo'));
     image.addEventListener('error', () => { heroFrame.classList.remove('has-photo'); image.remove(); });
     heroFrame.prepend(image);
-    heroFrame.classList.add('has-photo');
   }
 
   const eventList = document.getElementById('event-list');
