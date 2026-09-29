@@ -104,7 +104,7 @@ h2 em { font-weight: 400; color: var(--olive); }
 .photo-card-small { margin-top: 115px; }
 .gallery-placeholder { min-height: 440px; padding: 26px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; color: var(--ink); background: #dce7d9; position: relative; overflow: hidden; }
 .gallery-placeholder::before { content: ''; position: absolute; inset: 23px; border: 1px solid #fffefa; }
-.gallery-placeholder::after { content: 'G  &  V'; position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--serif); font-size: clamp(45px, 6vw, 100px); font-style: italic; opacity: .28; }
+.gallery-placeholder::after { content: 'V  &  G'; position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--serif); font-size: clamp(45px, 6vw, 100px); font-style: italic; opacity: .28; }
 .gallery-placeholder span { position: relative; z-index: 1; font-size: 11px; letter-spacing: .17em; text-transform: uppercase; }
 .photo-card-small .gallery-placeholder { min-height: 360px; background: #e4eade; }
 .photo-grid.is-placeholder { grid-template-columns: minmax(0, 720px); }

@@ -7,7 +7,7 @@
 window.WEDDING_CONTENT = {
   bride: "Giang Thanh",
   groom: "Thành Vinh",
-  pageTitle: "Giang Thanh & Thành Vinh — Lời mời cưới",
+  pageTitle: "Thành Vinh & Giang Thanh — Lời mời cưới",
   heroMessage: "Một ngày thật đẹp sẽ trọn vẹn hơn khi có bạn ở bên.",
   heroPhoto: "",
   // Chỉ điền khi đã xác nhận; ví dụ "Chủ nhật, 15.11.2026".

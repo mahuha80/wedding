@@ -14,8 +14,8 @@
     return element;
   };
 
-  document.title = data.pageTitle || `${data.bride} & ${data.groom} — Lời mời cưới`;
-  document.querySelector('meta[name="description"]')?.setAttribute('content', `Lời mời cưới của ${data.bride} và ${data.groom}.`);
+  document.title = data.pageTitle || `${data.groom} & ${data.bride} — Lời mời cưới`;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', `Lời mời cưới của ${data.groom} và ${data.bride}.`);
   setText('bride-name', data.bride);
   setText('groom-name', data.groom);
   setText('hero-message', data.heroMessage);
@@ -28,11 +28,11 @@
   setText('invitation-message', data.invitationMessage);
   setText('story-message', data.storyMessage);
   for (const id of ['signature', 'closing-signature', 'footer-names']) {
-    if (id === 'footer-names') setText(id, `${data.bride} & ${data.groom}`);
+    if (id === 'footer-names') setText(id, `${data.groom} & ${data.bride}`);
     else {
       const element = document.getElementById(id);
       if (element) element.innerHTML = '';
-      element?.append(document.createTextNode(`${data.bride} `), make('span', '', '&'), document.createTextNode(` ${data.groom}`));
+      element?.append(document.createTextNode(`${data.groom} `), make('span', '', '&'), document.createTextNode(` ${data.bride}`));
     }
   }
 
@@ -40,7 +40,7 @@
   if (data.heroPhoto?.trim() && heroFrame) {
     const image = make('img', 'hero-photo');
     image.src = data.heroPhoto;
-    image.alt = `Ảnh cưới của ${data.bride} và ${data.groom}`;
+    image.alt = `Ảnh cưới của ${data.groom} và ${data.bride}`;
     image.fetchPriority = 'high';
     image.addEventListener('load', () => heroFrame.classList.add('has-photo'));
     image.addEventListener('error', () => { heroFrame.classList.remove('has-photo'); image.remove(); });
@@ -89,7 +89,7 @@
       const figure = make('figure', `photo-card ${index % 3 === 0 ? 'photo-card-large' : 'photo-card-small'}`);
       const image = make('img', 'gallery-photo');
       image.src = photo.src;
-      image.alt = photo.alt || `Ảnh của ${data.bride} và ${data.groom}`;
+      image.alt = photo.alt || `Ảnh của ${data.groom} và ${data.bride}`;
       image.loading = 'lazy';
       image.decoding = 'async';
       figure.append(image, make('figcaption', '', photo.caption || 'Khoảnh khắc của chúng mình'));
