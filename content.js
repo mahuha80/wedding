@@ -10,6 +10,8 @@ window.WEDDING_CONTENT = {
   pageTitle: "Thành Vinh & Giang Thanh — Lời mời cưới",
   heroMessage: "Một ngày thật đẹp sẽ trọn vẹn hơn khi có bạn ở bên.",
   heroPhoto: "",
+  // Bản thu CC0 của Membeth; thay bằng tệp có giấy phép phù hợp nếu muốn đổi nhạc.
+  musicSrc: "./assets/audio/venetian-gondola-song.mp3",
   // Chỉ điền khi đã xác nhận; ví dụ "Chủ nhật, 15.11.2026".
   dateLine: "",
   locationLine: "",

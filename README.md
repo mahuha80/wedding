@@ -6,6 +6,8 @@ Static, responsive wedding invitation for Thành Vinh and Giang Thanh. Published
 
 Edit only `content.js` for the names, wording, date, venue, event details and photo paths. Empty details appear as an update notice; no date or venue is invented. Put your own photos in a new `assets/photos/` folder and set `heroPhoto` and `photos`. The hero portrait is cropped to 4:5 on mobile; keep both faces in the central safe area. Update `pageTitle` if the names change.
 
+The music path is `musicSrc` in `content.js`. The included recording is Felix Mendelssohn's *Venetian Gondola Song No. 2*, performed and released into CC0 by Membeth ([source and license](https://commons.wikimedia.org/wiki/File:Mendelssohn.Venetianisches.Gondellied.opus.30.6.ogg)). The local MP3 is transcoded from that recording. To change music, use a recording whose license allows redistribution and update the credit in the footer. Music starts only after a tap/click on “Mở thiệp & bật nhạc” or “Bật nhạc”, and remains controllable. Setting `musicSrc` to an empty string hides the controls.
+
 For each event, set `date`, `arrival`, `start`, `venue`, `address` and a verified `mapUrl`. An event intended only for family should **not** be added to this public file. Public GitHub Pages cannot restrict individual guests or securely collect RSVPs; add a private service before enabling either of those features. Do not commit guest lists, bank details, personal contacts or private responses.
 
 ## Local preview

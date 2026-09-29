@@ -27,6 +27,41 @@
   }
   setText('invitation-message', data.invitationMessage);
   setText('story-message', data.storyMessage);
+  const audio = document.getElementById('wedding-audio');
+  const musicToggle = document.getElementById('music-toggle');
+  const openInvitation = document.getElementById('open-invitation');
+  const musicLabel = musicToggle?.querySelector('.music-label');
+  const musicSrc = data.musicSrc?.trim();
+  if (audio && musicSrc) {
+    audio.src = musicSrc;
+    audio.volume = 0.32;
+  } else {
+    if (musicToggle) musicToggle.hidden = true;
+    if (openInvitation) openInvitation.hidden = true;
+  }
+  const syncMusic = () => {
+    const playing = audio && !audio.paused;
+    musicToggle?.setAttribute('aria-pressed', String(Boolean(playing)));
+    musicToggle?.setAttribute('aria-label', playing ? 'Tắt nhạc nền' : 'Bật nhạc nền');
+    if (musicLabel) musicLabel.textContent = playing ? 'Tắt nhạc' : 'Bật nhạc';
+    openInvitation?.classList.toggle('is-playing', Boolean(playing));
+    if (openInvitation) openInvitation.querySelector('span:nth-child(2)').textContent = playing ? 'Thiệp đã mở · Tắt nhạc' : 'Mở thiệp & bật nhạc';
+  };
+  const toggleMusic = async () => {
+    if (!audio || !musicSrc) return;
+    if (!audio.paused) { audio.pause(); return; }
+    try { await audio.play(); }
+    catch { musicToggle?.setAttribute('aria-label', 'Không thể phát nhạc, chạm để thử lại'); }
+  };
+  musicToggle?.addEventListener('click', toggleMusic);
+  openInvitation?.addEventListener('click', () => {
+    document.querySelector('.hero')?.classList.add('is-open');
+    toggleMusic();
+  });
+  audio?.addEventListener('play', syncMusic);
+  audio?.addEventListener('pause', syncMusic);
+  audio?.addEventListener('ended', syncMusic);
+  document.addEventListener('visibilitychange', () => { if (document.hidden && audio && !audio.paused) audio.pause(); });
   for (const id of ['signature', 'closing-signature', 'footer-names']) {
     if (id === 'footer-names') setText(id, `${data.groom} & ${data.bride}`);
     else {
@@ -94,6 +129,23 @@
       image.decoding = 'async';
       figure.append(image, make('figcaption', '', photo.caption || 'Khoảnh khắc của chúng mình'));
       photoGrid.append(figure);
+    });
+  }
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const targets = document.querySelectorAll('.invitation-body, .events-heading, .event-card, .story-heading, .photo-card, .closing h2');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('reveal-pending');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    targets.forEach((element) => {
+      if (element.getBoundingClientRect().top > window.innerHeight * 0.9) {
+        element.classList.add('reveal-pending');
+        observer.observe(element);
+      }
     });
   }
 })();

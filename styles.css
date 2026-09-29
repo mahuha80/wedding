@@ -44,9 +44,14 @@ h1 { display: flex; flex-direction: column; margin: 46px 0 0; font-size: clamp(5
 .ampersand { font-size: .66em; color: var(--olive); font-style: italic; line-height: .9; margin: 7px 0 12px 36%; font-weight: 400; }
 .hero-rule { width: 88px; height: 1px; background: var(--olive); margin: 40px 0 25px; }
 .hero-message { max-width: 370px; margin: 0; font-family: var(--serif); font-style: italic; font-size: clamp(18px, 1.5vw, 23px); line-height: 1.65; color: var(--muted); }
-.hero-meta { margin: 37px 0 25px; color: var(--ink); font-size: 13px; font-weight: 500; letter-spacing: .02em; }
+.hero-meta { margin: 37px 0 20px; color: var(--ink); font-size: 13px; font-weight: 500; letter-spacing: .02em; }
 .hero-meta p { margin: 0 0 4px; }
+.open-invitation { appearance: none; cursor: pointer; border: 1px solid var(--dark); background: var(--dark); color: var(--ivory); padding: 13px 18px; min-height: 48px; font: 500 12px var(--sans); letter-spacing: .055em; display: inline-flex; align-items: center; gap: 14px; transition: background .25s, transform .25s; }
+.open-invitation:hover { background: var(--olive); transform: translateY(-2px); }
+.open-icon { font: italic 20px var(--serif); line-height: 1; }
+.open-invitation > span:last-child { margin-left: 9px; }
 .text-link { text-decoration: none; text-transform: uppercase; font-size: 12px; letter-spacing: .12em; font-weight: 600; padding: 10px 0; border-bottom: 1px solid var(--ink); transition: color .2s, border-color .2s; }
+.hero-copy > .text-link { margin-top: 13px; }
 .text-link span { margin-left: 15px; font-size: 16px; }
 .text-link:hover { color: var(--olive); border-color: var(--olive); }
 .hero-visual { position: relative; background: var(--sage); padding: 37px 53px 37px 36px; display: grid; align-items: stretch; }
@@ -122,8 +127,18 @@ h2 em { font-weight: 400; color: var(--olive); }
 .hero-copy > h1 { animation: wedding-enter .72s .08s ease-out both; }
 .hero-copy > .hero-rule, .hero-copy > .hero-message, .hero-copy > .hero-meta, .hero-copy > .text-link { animation: wedding-enter .72s .16s ease-out both; }
 .hero-image-frame { animation: wedding-enter .8s .12s ease-out both; }
+.hero.is-open .hero-image-frame { animation: portrait-open .75s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes portrait-open { from { opacity: .72; transform: scale(.965); } to { opacity: 1; transform: scale(1); } }
+.reveal-pending { opacity: 0; transform: translateY(20px); }
+.invitation-body, .events-heading, .event-card, .story-heading, .photo-card, .closing h2 { transition: opacity .7s ease, transform .7s cubic-bezier(.22, 1, .36, 1); }
 @keyframes wedding-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.music-toggle { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); z-index: 12; min-width: 106px; min-height: 48px; padding: 9px 16px; display: inline-flex; gap: 9px; align-items: center; justify-content: center; border: 1px solid #d6dfd2; border-radius: 100px; background: var(--ivory); color: var(--dark); box-shadow: 0 8px 30px #1b302331; font: 600 12px var(--sans); cursor: pointer; transition: transform .2s, background .2s; }
+.music-toggle:hover { transform: translateY(-2px); background: var(--sage); }
+.music-toggle[aria-pressed="true"] .music-icon { animation: note-pulse 1.8s ease-in-out infinite; }
+.music-icon { font: italic 21px var(--serif); line-height: 1; }
+@keyframes note-pulse { 50% { transform: scale(1.18); opacity: .65; } }
 .footer { background: var(--dark); color: #f8f5ec; padding: 30px clamp(24px, 4.5vw, 82px); display: flex; justify-content: space-between; gap: 20px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.footer a { text-decoration: underline; text-underline-offset: 4px; }
 
 @media (max-width: 1100px) {
   .site-header { height: 76px; }
@@ -153,9 +168,10 @@ h2 em { font-weight: 400; color: var(--olive); }
   .hero-eyebrow { order: 1; margin: 36px 24px 0; }
   .hero-copy > h1 { order: 2; margin: 16px 24px 0; }
   .hero-meta { order: 3; margin: 18px 24px 0; font-size: 14px; line-height: 1.6; }
-  .hero-copy > .text-link { order: 4; justify-self: start; margin: 12px 24px 24px; min-height: 44px; }
-  .hero-visual { order: 5; }
-  .hero-message { order: 6; margin: 30px 24px 52px; max-width: 530px; }
+  .hero-copy > .open-invitation { order: 4; justify-self: start; margin: 17px 24px 0; }
+  .hero-copy > .text-link { order: 5; justify-self: start; margin: 9px 24px 22px; min-height: 44px; }
+  .hero-visual { order: 6; }
+  .hero-message { order: 7; margin: 30px 24px 52px; max-width: 530px; }
   .hero-rule { display: none; }
   .hero-eyebrow { font-size: 11px; letter-spacing: .1em; }
   h1 { font-size: clamp(43px, 9vw, 68px); letter-spacing: -.025em; white-space: normal; }
@@ -188,14 +204,18 @@ h2 em { font-weight: 400; color: var(--olive); }
   .gallery-placeholder { min-height: 250px; }
   .photo-card-small .gallery-placeholder { min-height: 250px; }
   .closing { min-height: 430px; padding-top: 78px; padding-bottom: 78px; }
-  .hero-copy > .hero-eyebrow, .hero-copy > h1, .hero-copy > .hero-rule, .hero-copy > .hero-message, .hero-copy > .hero-meta, .hero-copy > .text-link, .hero-image-frame { animation: none; }
-  .hero-image-frame.has-photo { animation: portrait-fade .32s ease-out both; }
+  .hero-copy > .hero-eyebrow, .hero-copy > h1, .hero-copy > .hero-rule, .hero-copy > .hero-message, .hero-copy > .hero-meta, .hero-copy > .text-link { animation: none; }
+  .hero-image-frame { animation: wedding-enter .55s .1s ease-out both; }
+  .hero-image-frame.has-photo { animation: portrait-fade .4s ease-out both; }
   @keyframes portrait-fade { from { opacity: .55; } to { opacity: 1; } }
-  .footer { flex-direction: column; padding: 27px 24px; gap: 5px; }
+  .reveal-pending { transform: translateY(10px); }
+  .music-toggle { right: calc(16px + env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom)); min-height: 48px; }
+  .footer { flex-direction: column; padding: 27px 24px calc(80px + env(safe-area-inset-bottom)); gap: 8px; }
 }
 @media (max-width: 390px) {
   .hero-eyebrow, .hero-copy > h1, .hero-meta { margin-left: 20px; margin-right: 20px; }
   .hero-copy > .text-link { margin-left: 20px; margin-right: 20px; }
+  .hero-copy > .open-invitation { margin-left: 20px; margin-right: 20px; }
   .hero-message { margin-left: 20px; margin-right: 20px; }
   .hero-eyebrow { white-space: normal; }
   h1 { font-size: clamp(37px, 10vw, 45px); }
@@ -204,4 +224,4 @@ h2 em { font-weight: 400; color: var(--olive); }
   .section-shell { padding-left: 20px; padding-right: 20px; }
   h2 { font-size: 40px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } .reveal-pending { opacity: 1 !important; transform: none !important; } }
