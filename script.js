@@ -135,11 +135,7 @@
   });
   const holdInvitation = () => {
     if (!gate || gate.hidden || gate.classList.contains('is-leaving')) return;
-    gate.classList.add('is-expanded');
-    sheet?.removeAttribute('aria-hidden');
-    if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Vào website ';
-    if (gateMusic) gateMusic.hidden = true;
-    if (gateContinue) { gateContinue.hidden = false; gateContinue.focus({ preventScroll: true }); }
+    finishGate();
   };
   const expandCard = () => {
     if (!gate || gate.hidden || !sheet) return;
