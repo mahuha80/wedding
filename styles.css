@@ -134,8 +134,8 @@ h2 em { font-weight: 400; color: var(--olive); }
 .hero-copy > .hero-rule, .hero-copy > .hero-message, .hero-copy > .hero-meta, .hero-copy > .open-invitation, .hero-copy > .open-silent, .hero-copy > .text-link { animation: wedding-enter .72s .16s ease-out both; }
 .hero-image-frame { animation: wedding-enter .8s .12s ease-out both; }
 .hero.is-open .hero-image-frame { animation: portrait-open .75s cubic-bezier(.22, 1, .36, 1) both; }
-.hero.is-revealing { animation: site-reveal .85s cubic-bezier(.22, 1, .36, 1) both; }
-@keyframes site-reveal { from { opacity: .7; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.hero.is-revealing { animation: site-reveal 1s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes site-reveal { from { opacity: .84; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes portrait-open { from { opacity: .72; transform: scale(.965); } to { opacity: 1; transform: scale(1); } }
 .reveal-pending { opacity: 0; transform: translateY(20px); }
 .invitation-body, .events-heading, .event-card, .story-heading, .photo-card, .closing h2 { transition: opacity .7s ease, transform .7s cubic-bezier(.22, 1, .36, 1); }
@@ -150,7 +150,7 @@ h2 em { font-weight: 400; color: var(--olive); }
 .invitation-gate[hidden], .gate-music[hidden] { display: none; }
 .invitation-gate::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 50% 44%, #fffefa 0, #e6eddf 100%); }
 .invitation-gate.is-opening { animation: gate-arrive .22s ease-out both; }
-.invitation-gate.is-leaving { animation: none; transform: translateY(-105%); transition: transform .85s cubic-bezier(.65, 0, .2, 1); pointer-events: none; box-shadow: 0 30px 55px #233d3230; }
+.invitation-gate.is-leaving { animation: none; opacity: 0; transform: translateY(-5vh) scale(.985); transition: transform 1s cubic-bezier(.22, 1, .36, 1), opacity 1s ease-in-out; pointer-events: none; }
 .gate-transition-sheet { position: fixed; z-index: 8; display: none; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px; text-align: center; border: 1px solid #aab9a7; background: var(--ivory); box-shadow: 0 15px 40px #233d321c; transition: left .9s cubic-bezier(.22, 1, .36, 1), top .9s cubic-bezier(.22, 1, .36, 1), width .9s cubic-bezier(.22, 1, .36, 1), height .9s cubic-bezier(.22, 1, .36, 1); overflow: hidden; }
 .gate-transition-sheet::before { content: ''; position: absolute; inset: 12px; border: 1px solid var(--line); }
 .gate-transition-sheet strong { font: 400 clamp(20px, 4vw, 39px)/1.08 var(--serif); }
@@ -167,8 +167,9 @@ h2 em { font-weight: 400; color: var(--olive); }
 .is-expanded .gate-transition-sheet .gate-card-kicker, .is-expanded .gate-transition-sheet .gate-card-foot { font-size: 11px; }
 .is-expanded .gate-actions { position: fixed; z-index: 11; top: max(36px, env(safe-area-inset-top)); right: max(40px, env(safe-area-inset-right)); opacity: 1; gap: 10px; }
 .is-expanded .gate-actions button { margin-top: 0; }
-.gate-continue { position: fixed; z-index: 12; left: 50%; bottom: max(48px, calc(env(safe-area-inset-bottom) + 30px)); transform: translateX(-50%); min-height: 48px; padding: 10px 20px; border: 1px solid #839b87; border-radius: 100px; background: var(--dark); color: var(--ivory); white-space: nowrap; font: 600 11px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 30px #233d3230; }
-.gate-continue span { padding-left: 10px; font-size: 18px; vertical-align: middle; }
+.gate-continue { position: fixed; z-index: 12; left: 50%; bottom: max(48px, calc(env(safe-area-inset-bottom) + 30px)); transform: translateX(-50%); min-height: 48px; padding: 10px 14px; border: 0; border-bottom: 1px solid #8fa390; background: transparent; color: var(--olive); white-space: nowrap; font: 500 12px var(--sans); letter-spacing: .1em; cursor: pointer; }
+.gate-continue span { display: inline-block; padding-left: 8px; font: italic 19px var(--serif); vertical-align: middle; animation: invite-down 2.8s ease-in-out infinite; }
+@keyframes invite-down { 50% { transform: translateY(4px); opacity: .6; } }
 .gate-heading { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: .24em; }
 .gate-heading span:last-child { font: 400 clamp(19px, 2.4vw, 28px) var(--serif); letter-spacing: .02em; text-transform: none; }
 .gate-scene { position: relative; width: min(520px, 84vw); aspect-ratio: 1.26; margin: 24px 0 2px; perspective: 1100px; filter: drop-shadow(0 23px 24px #233d3228); }

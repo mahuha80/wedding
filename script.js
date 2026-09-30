@@ -107,7 +107,7 @@
     hero?.classList.add('is-revealing');
     gate.classList.add('is-leaving');
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) complete();
-    else gateTimers.push(window.setTimeout(complete, 850));
+    else gateTimers.push(window.setTimeout(complete, 1000));
   };
   const fullSheetBounds = () => {
     const inset = window.innerWidth <= 760 ? 10 : 24;
