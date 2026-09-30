@@ -33,15 +33,16 @@
   const gate = document.getElementById('invitation-gate');
   const gateSkip = document.getElementById('gate-skip');
   const gateMusic = document.getElementById('gate-music');
+  const hero = document.querySelector('.hero');
+  const sheet = gate?.querySelector('.gate-transition-sheet');
   if (gate) {
     gate.setAttribute('aria-label', `Thiệp mời cưới của ${data.groom} và ${data.bride}`);
     const gateNames = gate.querySelector('.gate-heading span:last-child');
     if (gateNames) gateNames.textContent = `${data.groom} & ${data.bride}`;
-    const cardNames = gate.querySelector('.gate-card strong');
-    if (cardNames) {
+    gate.querySelectorAll('.gate-card strong, .gate-transition-sheet strong').forEach((cardNames) => {
       const ampersand = make('i', '', '&');
       cardNames.replaceChildren(document.createTextNode(data.groom), document.createElement('br'), ampersand, document.createElement('br'), document.createTextNode(data.bride));
-    }
+    });
   }
   const background = document.querySelectorAll('.site-header, main, .footer, #music-toggle');
   const musicLabel = musicToggle?.querySelector('.music-label');
@@ -76,42 +77,54 @@
   gateMusic?.addEventListener('click', (event) => { event.stopPropagation(); optedOut = false; tryMusic(); });
   let gateTimers = [];
   const clearGateTimers = () => { gateTimers.forEach(window.clearTimeout); gateTimers = []; };
-  const finishGate = () => {
+  const finishGate = (fromGesture = false) => {
     if (!gate || gate.hidden) return;
     clearGateTimers();
-    tryMusic(); // Synchronous with the visitor's gesture when autoplay was blocked.
-    const close = () => {
-      gate.hidden = true;
-      gate.classList.remove('is-opening', 'is-opened', 'is-leaving');
-      document.body.classList.remove('gate-active');
-      background.forEach((element) => { element.inert = false; });
-      document.querySelector('.hero')?.classList.add('is-open');
-      openInvitation?.focus({ preventScroll: true });
-    };
-    gate.classList.add('is-leaving');
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) close();
-    else gateTimers.push(window.setTimeout(close, 380));
+    if (fromGesture) tryMusic();
+    gate.hidden = true;
+    gate.classList.remove('is-opening', 'is-expanding', 'is-leaving');
+    if (sheet) sheet.removeAttribute('style');
+    document.body.classList.remove('gate-active');
+    background.forEach((element) => { element.inert = false; });
+    hero?.classList.add('is-open');
+    hero?.focus({ preventScroll: true });
+  };
+  const expandCard = () => {
+    if (!gate || gate.hidden || !sheet || !hero) return;
+    const card = gate.querySelector('.gate-card');
+    const target = hero.querySelector('.hero-copy');
+    const start = card.getBoundingClientRect();
+    const end = target.getBoundingClientRect();
+    Object.assign(sheet.style, { left: `${start.left}px`, top: `${start.top}px`, width: `${start.width}px`, height: `${start.height}px` });
+    gate.classList.add('is-expanding');
+    // One rendered frame is needed for the paper to travel from its envelope position.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (gate.hidden || !gate.classList.contains('is-expanding')) return;
+      Object.assign(sheet.style, { left: `${end.left}px`, top: `${end.top}px`, width: `${end.width}px`, height: `${end.height}px` });
+    }));
+    gateTimers.push(window.setTimeout(() => gate.classList.add('is-leaving'), 930));
+    gateTimers.push(window.setTimeout(() => finishGate(), 1260));
   };
   const launchGate = () => {
     if (!gate || !gate.hidden) return;
     gate.hidden = false;
-    gate.classList.remove('is-opening', 'is-opened', 'is-leaving');
+    gate.classList.remove('is-opening', 'is-expanding', 'is-leaving');
     document.body.classList.add('gate-active');
     background.forEach((element) => { element.inert = true; });
     gateSkip?.focus({ preventScroll: true });
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) gate.classList.add('is-opened');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishGate();
     else {
       gate.classList.add('is-opening');
-      gateTimers.push(window.setTimeout(() => gate.classList.add('is-opened'), 1450));
+      gateTimers.push(window.setTimeout(expandCard, 1450));
     }
     syncMusic();
   };
   openInvitation?.addEventListener('click', launchGate);
-  gateSkip?.addEventListener('click', finishGate);
-  gate?.addEventListener('click', (event) => { if (event.target === gate || event.target.classList.contains('gate-petals')) finishGate(); });
+  gateSkip?.addEventListener('click', () => finishGate(true));
+  gate?.addEventListener('click', (event) => { if (event.target === gate || event.target.classList.contains('gate-petals')) finishGate(true); });
   document.addEventListener('keydown', (event) => {
     if (!gate || gate.hidden) return;
-    if (event.key === 'Escape') finishGate();
+    if (event.key === 'Escape') finishGate(true);
     if (event.key === 'Tab') {
       const focusable = [gateSkip, gateMusic].filter((element) => element && !element.hidden);
       const index = focusable.indexOf(document.activeElement);
