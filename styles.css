@@ -195,18 +195,22 @@ h2 em { font-weight: 400; color: var(--olive); }
 .is-opened .gate-flap { transform: rotateX(-165deg); }
 .is-opened .gate-card { transform: translateY(-35%); }
 .gate-petals { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.gate-petals span { position: absolute; top: -8%; left: var(--x); width: var(--size); height: calc(var(--size) * 1.4); border-radius: 70% 12% 70% 14%; background: #fffdf5; opacity: 0; box-shadow: 0 0 5px #d1dfcc8c; animation: petal-fall var(--duration) var(--delay) linear infinite; }
-.gate-petals span:nth-child(1) { --x: 6%; --size: 9px; --duration: 16s; --delay: -3s; }
-.gate-petals span:nth-child(2) { --x: 16%; --size: 4px; --duration: 19s; --delay: -11s; border-radius: 50%; }
-.gate-petals span:nth-child(3) { --x: 29%; --size: 8px; --duration: 21s; --delay: -8s; }
-.gate-petals span:nth-child(4) { --x: 77%; --size: 7px; --duration: 17s; --delay: -13s; }
-.gate-petals span:nth-child(5) { --x: 91%; --size: 5px; --duration: 23s; --delay: -6s; border-radius: 50%; }
-.gate-petals span:nth-child(6) { --x: 97%; --size: 10px; --duration: 18s; --delay: -15s; }
-.gate-petals span:nth-child(7) { --x: 3%; --size: 5px; --duration: 22s; --delay: -17s; border-radius: 50%; }
-.gate-petals span:nth-child(8) { --x: 70%; --size: 4px; --duration: 20s; --delay: -2s; border-radius: 50%; }
-.gate-petals span:nth-child(9) { --x: 39%; --size: 6px; --duration: 24s; --delay: -19s; }
-.gate-petals span:nth-child(10) { --x: 85%; --size: 8px; --duration: 20s; --delay: -9s; }
+.site-petals { position: fixed; inset: 0; z-index: 6; overflow: hidden; pointer-events: none; contain: layout paint; }
+.gate-active .site-petals { display: none; }
+.gate-petals span, .site-petals span { position: absolute; top: -8%; left: var(--x); width: var(--size); height: calc(var(--size) * 1.4); border-radius: 70% 12% 70% 14%; background: #fffdf5; opacity: 0; box-shadow: 0 0 5px #d1dfcc8c; animation: petal-fall var(--duration) var(--delay) linear infinite; }
+.site-petals span { opacity: 0; animation-name: site-petal-fall; }
+.gate-petals span:nth-child(1), .site-petals span:nth-child(1) { --x: 6%; --size: 9px; --duration: 16s; --delay: -3s; }
+.gate-petals span:nth-child(2), .site-petals span:nth-child(2) { --x: 16%; --size: 4px; --duration: 19s; --delay: -11s; border-radius: 50%; }
+.gate-petals span:nth-child(3), .site-petals span:nth-child(3) { --x: 29%; --size: 8px; --duration: 21s; --delay: -8s; }
+.gate-petals span:nth-child(4), .site-petals span:nth-child(4) { --x: 77%; --size: 7px; --duration: 17s; --delay: -13s; }
+.gate-petals span:nth-child(5), .site-petals span:nth-child(5) { --x: 91%; --size: 5px; --duration: 23s; --delay: -6s; border-radius: 50%; }
+.gate-petals span:nth-child(6), .site-petals span:nth-child(6) { --x: 97%; --size: 10px; --duration: 18s; --delay: -15s; }
+.gate-petals span:nth-child(7), .site-petals span:nth-child(7) { --x: 3%; --size: 5px; --duration: 22s; --delay: -17s; border-radius: 50%; }
+.gate-petals span:nth-child(8), .site-petals span:nth-child(8) { --x: 70%; --size: 4px; --duration: 20s; --delay: -2s; border-radius: 50%; }
+.gate-petals span:nth-child(9), .site-petals span:nth-child(9) { --x: 39%; --size: 6px; --duration: 24s; --delay: -19s; }
+.gate-petals span:nth-child(10), .site-petals span:nth-child(10) { --x: 85%; --size: 8px; --duration: 20s; --delay: -9s; }
 @keyframes petal-fall { 5% { opacity: .65; } 85% { opacity: .65; } 100% { opacity: 0; transform: translate3d(34px, 115vh, 0) rotate(300deg); } }
+@keyframes site-petal-fall { 5% { opacity: .42; } 85% { opacity: .42; } 100% { opacity: 0; transform: translate3d(34px, 115vh, 0) rotate(300deg); } }
 .is-opening .gate-seal { animation: seal-open .28s .1s ease-in both; }
 .is-opening .gate-flap { animation: flap-open .6s .22s cubic-bezier(.2, .7, .2, 1) both; }
 .is-opening .gate-card { animation: card-rise .9s .42s cubic-bezier(.22, 1, .36, 1) both; }
@@ -312,7 +316,7 @@ h2 em { font-weight: 400; color: var(--olive); }
   .gate-continue { bottom: calc(30px + env(safe-area-inset-bottom)); font-size: 10px; }
   .gate-seal { width: 51px; height: 51px; font-size: 17px; }
   .gate-caption { margin-top: 10px; font-size: 15px; }
-  .gate-petals span:nth-child(n+6) { display: none; }
+  .gate-petals span:nth-child(n+6), .site-petals span:nth-child(n+6) { display: none; }
   .gate-hint { font-size: 10px; }
   .is-opening .gate-flap { animation-duration: .46s; }
   .is-opening .gate-card { animation-duration: .66s; animation-delay: .33s; }
@@ -333,4 +337,4 @@ h2 em { font-weight: 400; color: var(--olive); }
   .section-shell { padding-left: 20px; padding-right: 20px; }
   h2 { font-size: 40px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } .reveal-pending { opacity: 1 !important; transform: none !important; } .gate-petals { display: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } .reveal-pending { opacity: 1 !important; transform: none !important; } .gate-petals, .site-petals { display: none; } }
