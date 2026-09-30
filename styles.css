@@ -168,6 +168,8 @@ h2 em { font-weight: 400; color: var(--olive); }
 .is-expanded .gate-actions { position: fixed; z-index: 11; top: max(36px, env(safe-area-inset-top)); right: max(40px, env(safe-area-inset-right)); opacity: 1; gap: 10px; }
 .is-expanded .gate-actions button { margin-top: 0; }
 .gate-continue { position: fixed; z-index: 12; left: 50%; bottom: max(48px, calc(env(safe-area-inset-bottom) + 30px)); transform: translateX(-50%); min-height: 48px; padding: 10px 14px; border: 0; border-bottom: 1px solid #8fa390; background: transparent; color: var(--olive); white-space: nowrap; font: 500 12px var(--sans); letter-spacing: .1em; cursor: pointer; }
+.gate-continue:hover, .gate-continue:focus-visible { color: var(--ink); border-bottom: 2px solid var(--olive); }
+.gate-continue:focus-visible { outline: none; }
 .gate-continue span { display: inline-block; padding-left: 8px; font: italic 19px var(--serif); vertical-align: middle; animation: invite-down 2.8s ease-in-out infinite; }
 @keyframes invite-down { 50% { transform: translateY(4px); opacity: .6; } }
 .gate-heading { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: .24em; }
