@@ -10,9 +10,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=full-card-2" />
-    <script src="./content.js?v=full-card-2" defer></script>
-    <script src="./script.js?v=full-card-2" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=personal-card-1" />
+    <script src="./content.js?v=personal-card-1" defer></script>
+    <script src="./script.js?v=personal-card-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Đi đến nội dung</a>
@@ -59,6 +59,7 @@
         <div class="invitation-body">
           <p class="eyebrow">WITH LOVE & GRATITUDE</p>
           <h2 id="invitation-title">Niềm vui sẽ đẹp hơn<br /><em>khi được sẻ chia.</em></h2>
+          <p class="invitation-recipient" id="invitation-recipient" hidden>Trân trọng kính mời <strong id="invitation-recipient-name"></strong></p>
           <p id="invitation-message">Chúng mình trân trọng mời bạn đến chung vui trong ngày đặc biệt. Sự hiện diện của bạn là món quà đáng quý nhất đối với chúng mình.</p>
           <div class="signature" id="signature">Thành Vinh <span>&</span> Giang Thanh</div>
         </div>
@@ -103,7 +104,7 @@
         <div class="gate-envelope-front"></div>
         <div class="gate-seal">V <i>&</i> T</div>
       </div>
-      <div class="gate-transition-sheet" aria-hidden="true"><span class="gate-card-kicker">THE WEDDING OF</span><strong>Thành Vinh<br /><i>&</i><br />Giang Thanh</strong><p class="sheet-message">Một ngày thật đẹp sẽ trọn vẹn hơn khi có bạn ở bên.</p><span class="gate-card-foot">WITH LOVE & GRATITUDE</span></div>
+      <div class="gate-transition-sheet" aria-hidden="true"><span class="gate-card-kicker">THE WEDDING OF</span><strong>Thành Vinh<br /><i>&</i><br />Giang Thanh</strong><p class="sheet-recipient" id="sheet-recipient" hidden>Trân trọng kính mời<br /><span id="sheet-recipient-name"></span></p><p class="sheet-message">Một ngày thật đẹp sẽ trọn vẹn hơn khi có bạn ở bên.</p><span class="gate-card-foot">WITH LOVE & GRATITUDE</span></div>
       <p class="gate-caption" aria-hidden="true">Một lời mời, một ngày thật đẹp.</p>
       <div class="gate-actions"><button class="gate-skip" id="gate-skip" type="button">Bỏ qua hiệu ứng <span aria-hidden="true">↗</span></button><button class="gate-music" id="gate-music" type="button" hidden>Bật nhạc ♪</button></div>
       <button class="gate-continue" id="gate-continue" type="button" hidden>Cuộn xuống để xem website <span aria-hidden="true">↓</span></button>

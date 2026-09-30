@@ -27,6 +27,15 @@
   }
   setText('invitation-message', data.invitationMessage);
   setText('story-message', data.storyMessage);
+  const requestedName = new URLSearchParams(window.location.search).get('name');
+  const recipientName = requestedName?.normalize('NFC').trim().replace(/^['“”\"]+|['“”\"]+$/g, '').replace(/\s+/g, ' ').slice(0, 60);
+  if (recipientName) {
+    for (const [wrapperId, nameId] of [['sheet-recipient', 'sheet-recipient-name'], ['invitation-recipient', 'invitation-recipient-name']]) {
+      const wrapper = document.getElementById(wrapperId);
+      const name = document.getElementById(nameId);
+      if (wrapper && name) { name.textContent = recipientName; wrapper.hidden = false; }
+    }
+  }
   const audio = document.getElementById('wedding-audio');
   const musicToggle = document.getElementById('music-toggle');
   const openInvitation = document.getElementById('open-invitation');
@@ -92,11 +101,13 @@
       document.body.classList.remove('gate-active');
       background.forEach((element) => { element.inert = false; });
       hero?.classList.add('is-open');
+      hero?.classList.remove('is-revealing');
       hero?.focus({ preventScroll: true });
     };
+    hero?.classList.add('is-revealing');
     gate.classList.add('is-leaving');
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) complete();
-    else gateTimers.push(window.setTimeout(complete, 380));
+    else gateTimers.push(window.setTimeout(complete, 850));
   };
   const fullSheetBounds = () => {
     const inset = window.innerWidth <= 760 ? 10 : 24;
@@ -125,6 +136,8 @@
   const launchGate = () => {
     if (!gate || !gate.hidden) return;
     gate.hidden = false;
+    hero?.classList.remove('is-revealing');
+    wheelTravel = 0;
     gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
     if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Bỏ qua hiệu ứng ';
     document.body.classList.add('gate-active');
@@ -146,18 +159,21 @@
   gateContinue?.addEventListener('click', () => finishGate(true));
   gate?.addEventListener('click', (event) => { if (event.target === gate || event.target.classList.contains('gate-petals')) finishGate(true); });
   gate?.addEventListener('wheel', (event) => {
-    if (!gate.classList.contains('is-expanded') || event.deltaY <= 12) return;
+    if (!gate.classList.contains('is-expanded')) return;
     event.preventDefault();
-    finishGate();
+    wheelTravel = event.deltaY > 0 ? wheelTravel + event.deltaY : 0;
+    if (wheelTravel > 35) { wheelTravel = 0; finishGate(); }
   }, { passive: false });
+  let wheelTravel = 0;
   let touchStartY = null;
   gate?.addEventListener('touchstart', (event) => { touchStartY = event.touches[0]?.clientY ?? null; }, { passive: true });
   gate?.addEventListener('touchmove', (event) => {
-    if (!gate.classList.contains('is-expanded') || touchStartY === null || touchStartY - event.touches[0].clientY < 35) return;
-    event.preventDefault();
-    touchStartY = null;
-    finishGate();
+    if (gate.classList.contains('is-expanded')) event.preventDefault();
   }, { passive: false });
+  gate?.addEventListener('touchend', (event) => {
+    if (gate.classList.contains('is-expanded') && touchStartY !== null && touchStartY - event.changedTouches[0].clientY > 45) finishGate();
+    touchStartY = null;
+  });
   document.addEventListener('keydown', (event) => {
     if (!gate || gate.hidden) return;
     if (event.key === 'Escape') finishGate(true);
