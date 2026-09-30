@@ -153,6 +153,15 @@ h2 em { font-weight: 400; color: var(--olive); }
 .gate-transition-sheet strong i { color: var(--olive); font-weight: 400; }
 .is-expanding .gate-transition-sheet { display: flex; }
 .is-expanding .gate-scene, .is-expanding .gate-heading, .is-expanding .gate-caption, .is-expanding .gate-actions { opacity: 0; transition: opacity .24s; }
+.is-expanded .gate-transition-sheet { justify-content: center; gap: clamp(22px, 5vh, 55px); }
+.is-expanded .gate-transition-sheet strong { font-size: clamp(40px, 6vw, 78px); line-height: 1.2; }
+.sheet-message { display: none; }
+.is-expanded .sheet-message { display: block; max-width: 540px; margin: 0; color: var(--muted); font: italic clamp(16px, 2vw, 22px)/1.7 var(--serif); }
+.is-expanded .gate-transition-sheet .gate-card-kicker, .is-expanded .gate-transition-sheet .gate-card-foot { font-size: 11px; }
+.is-expanded .gate-actions { position: fixed; z-index: 11; top: max(36px, env(safe-area-inset-top)); right: max(40px, env(safe-area-inset-right)); opacity: 1; gap: 10px; }
+.is-expanded .gate-actions button { margin-top: 0; }
+.gate-continue { position: fixed; z-index: 12; left: 50%; bottom: max(48px, calc(env(safe-area-inset-bottom) + 30px)); transform: translateX(-50%); min-height: 48px; padding: 10px 20px; border: 1px solid #839b87; border-radius: 100px; background: var(--dark); color: var(--ivory); white-space: nowrap; font: 600 11px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 30px #233d3230; }
+.gate-continue span { padding-left: 10px; font-size: 18px; vertical-align: middle; }
 .is-leaving .gate-transition-sheet strong, .is-leaving .gate-transition-sheet span { opacity: 0; transition: opacity .3s; }
 .gate-heading { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: .24em; }
 .gate-heading span:last-child { font: 400 clamp(19px, 2.4vw, 28px) var(--serif); letter-spacing: .02em; text-transform: none; }
@@ -284,6 +293,12 @@ h2 em { font-weight: 400; color: var(--olive); }
   .gate-card::before { inset: 7px; }
   .gate-card-kicker, .gate-card-foot { font-size: 7px; letter-spacing: .12em; }
   .gate-card strong { font-size: clamp(19px, 6vw, 29px); }
+  .is-expanded .gate-transition-sheet { gap: clamp(16px, 3vh, 30px); padding: 60px 20px 94px; }
+  .is-expanded .gate-transition-sheet strong { font-size: clamp(35px, 9vw, 54px); }
+  .is-expanded .gate-actions { top: calc(20px + env(safe-area-inset-top)); right: calc(20px + env(safe-area-inset-right)); gap: 6px; }
+  .is-expanded .gate-skip { font-size: 9px; padding: 6px; }
+  .is-expanded .gate-music { font-size: 9px; padding: 6px 10px; }
+  .gate-continue { bottom: calc(30px + env(safe-area-inset-bottom)); font-size: 10px; }
   .gate-seal { width: 51px; height: 51px; font-size: 17px; }
   .gate-caption { margin-top: 10px; font-size: 15px; }
   .gate-petals span:nth-child(n+6) { display: none; }

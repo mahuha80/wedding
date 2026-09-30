@@ -33,6 +33,7 @@
   const gate = document.getElementById('invitation-gate');
   const gateSkip = document.getElementById('gate-skip');
   const gateMusic = document.getElementById('gate-music');
+  const gateContinue = document.getElementById('gate-continue');
   const hero = document.querySelector('.hero');
   const sheet = gate?.querySelector('.gate-transition-sheet');
   if (gate) {
@@ -43,6 +44,8 @@
       const ampersand = make('i', '', '&');
       cardNames.replaceChildren(document.createTextNode(data.groom), document.createElement('br'), ampersand, document.createElement('br'), document.createTextNode(data.bride));
     });
+    const sheetMessage = gate.querySelector('.sheet-message');
+    if (sheetMessage) sheetMessage.textContent = data.heroMessage;
   }
   const background = document.querySelectorAll('.site-header, main, .footer, #music-toggle');
   const musicLabel = musicToggle?.querySelector('.music-label');
@@ -78,41 +81,60 @@
   let gateTimers = [];
   const clearGateTimers = () => { gateTimers.forEach(window.clearTimeout); gateTimers = []; };
   const finishGate = (fromGesture = false) => {
-    if (!gate || gate.hidden) return;
+    if (!gate || gate.hidden || gate.classList.contains('is-leaving')) return;
     clearGateTimers();
     if (fromGesture) tryMusic();
-    gate.hidden = true;
-    gate.classList.remove('is-opening', 'is-expanding', 'is-leaving');
-    if (sheet) sheet.removeAttribute('style');
-    document.body.classList.remove('gate-active');
-    background.forEach((element) => { element.inert = false; });
-    hero?.classList.add('is-open');
-    hero?.focus({ preventScroll: true });
+    const complete = () => {
+      gate.hidden = true;
+      gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
+      if (sheet) { sheet.removeAttribute('style'); sheet.setAttribute('aria-hidden', 'true'); }
+      if (gateContinue) gateContinue.hidden = true;
+      document.body.classList.remove('gate-active');
+      background.forEach((element) => { element.inert = false; });
+      hero?.classList.add('is-open');
+      hero?.focus({ preventScroll: true });
+    };
+    gate.classList.add('is-leaving');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) complete();
+    else gateTimers.push(window.setTimeout(complete, 380));
+  };
+  const fullSheetBounds = () => {
+    const inset = window.innerWidth <= 760 ? 10 : 24;
+    return { left: `${inset}px`, top: `${inset}px`, width: `${window.innerWidth - inset * 2}px`, height: `${window.innerHeight - inset * 2}px` };
+  };
+  const holdInvitation = () => {
+    if (!gate || gate.hidden || gate.classList.contains('is-leaving')) return;
+    gate.classList.add('is-expanded');
+    sheet?.removeAttribute('aria-hidden');
+    if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Vào website ';
+    if (gateContinue) { gateContinue.hidden = false; gateContinue.focus({ preventScroll: true }); }
   };
   const expandCard = () => {
-    if (!gate || gate.hidden || !sheet || !hero) return;
+    if (!gate || gate.hidden || !sheet) return;
     const card = gate.querySelector('.gate-card');
-    const target = hero.querySelector('.hero-copy');
     const start = card.getBoundingClientRect();
-    const end = target.getBoundingClientRect();
     Object.assign(sheet.style, { left: `${start.left}px`, top: `${start.top}px`, width: `${start.width}px`, height: `${start.height}px` });
     gate.classList.add('is-expanding');
     // One rendered frame is needed for the paper to travel from its envelope position.
     requestAnimationFrame(() => requestAnimationFrame(() => {
       if (gate.hidden || !gate.classList.contains('is-expanding')) return;
-      Object.assign(sheet.style, { left: `${end.left}px`, top: `${end.top}px`, width: `${end.width}px`, height: `${end.height}px` });
+      Object.assign(sheet.style, fullSheetBounds());
     }));
-    gateTimers.push(window.setTimeout(() => gate.classList.add('is-leaving'), 930));
-    gateTimers.push(window.setTimeout(() => finishGate(), 1260));
+    gateTimers.push(window.setTimeout(holdInvitation, 1000));
   };
   const launchGate = () => {
     if (!gate || !gate.hidden) return;
     gate.hidden = false;
-    gate.classList.remove('is-opening', 'is-expanding', 'is-leaving');
+    gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
+    if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Bỏ qua hiệu ứng ';
     document.body.classList.add('gate-active');
     background.forEach((element) => { element.inert = true; });
     gateSkip?.focus({ preventScroll: true });
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishGate();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      Object.assign(sheet.style, fullSheetBounds());
+      gate.classList.add('is-expanding');
+      holdInvitation();
+    }
     else {
       gate.classList.add('is-opening');
       gateTimers.push(window.setTimeout(expandCard, 1450));
@@ -121,12 +143,29 @@
   };
   openInvitation?.addEventListener('click', launchGate);
   gateSkip?.addEventListener('click', () => finishGate(true));
+  gateContinue?.addEventListener('click', () => finishGate(true));
   gate?.addEventListener('click', (event) => { if (event.target === gate || event.target.classList.contains('gate-petals')) finishGate(true); });
+  gate?.addEventListener('wheel', (event) => {
+    if (!gate.classList.contains('is-expanded') || event.deltaY <= 12) return;
+    event.preventDefault();
+    finishGate();
+  }, { passive: false });
+  let touchStartY = null;
+  gate?.addEventListener('touchstart', (event) => { touchStartY = event.touches[0]?.clientY ?? null; }, { passive: true });
+  gate?.addEventListener('touchmove', (event) => {
+    if (!gate.classList.contains('is-expanded') || touchStartY === null || touchStartY - event.touches[0].clientY < 35) return;
+    event.preventDefault();
+    touchStartY = null;
+    finishGate();
+  }, { passive: false });
   document.addEventListener('keydown', (event) => {
     if (!gate || gate.hidden) return;
     if (event.key === 'Escape') finishGate(true);
+    if (gate.classList.contains('is-expanded') && ['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+      event.preventDefault(); finishGate(true); return;
+    }
     if (event.key === 'Tab') {
-      const focusable = [gateSkip, gateMusic].filter((element) => element && !element.hidden);
+      const focusable = [gateSkip, gateMusic, gateContinue].filter((element) => element && !element.hidden);
       const index = focusable.indexOf(document.activeElement);
       if (event.shiftKey && index <= 0) { event.preventDefault(); focusable.at(-1)?.focus(); }
       else if (!event.shiftKey && index === focusable.length - 1) { event.preventDefault(); focusable[0]?.focus(); }
