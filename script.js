@@ -30,9 +30,20 @@
   const audio = document.getElementById('wedding-audio');
   const musicToggle = document.getElementById('music-toggle');
   const openInvitation = document.getElementById('open-invitation');
-  const openSilent = document.getElementById('open-silent');
   const gate = document.getElementById('invitation-gate');
   const gateSkip = document.getElementById('gate-skip');
+  const gateMusic = document.getElementById('gate-music');
+  if (gate) {
+    gate.setAttribute('aria-label', `Thiệp mời cưới của ${data.groom} và ${data.bride}`);
+    const gateNames = gate.querySelector('.gate-heading span:last-child');
+    if (gateNames) gateNames.textContent = `${data.groom} & ${data.bride}`;
+    const cardNames = gate.querySelector('.gate-card strong');
+    if (cardNames) {
+      const ampersand = make('i', '', '&');
+      cardNames.replaceChildren(document.createTextNode(data.groom), document.createElement('br'), ampersand, document.createElement('br'), document.createTextNode(data.bride));
+    }
+  }
+  const background = document.querySelectorAll('.site-header, main, .footer, #music-toggle');
   const musicLabel = musicToggle?.querySelector('.music-label');
   const musicSrc = data.musicSrc?.trim();
   if (audio && musicSrc) {
@@ -40,60 +51,80 @@
     audio.volume = 0.32;
   } else {
     if (musicToggle) musicToggle.hidden = true;
-    if (openSilent) openSilent.hidden = true;
-    if (openInvitation) openInvitation.querySelector('.open-label').textContent = 'Mở thiệp';
+    if (gateMusic) gateMusic.hidden = true;
   }
   const syncMusic = () => {
     const playing = audio && !audio.paused;
     musicToggle?.setAttribute('aria-pressed', String(Boolean(playing)));
     musicToggle?.setAttribute('aria-label', playing ? 'Tắt nhạc nền' : 'Bật nhạc nền');
     if (musicLabel) musicLabel.textContent = playing ? 'Tắt nhạc' : 'Bật nhạc';
+    if (gateMusic) gateMusic.hidden = !musicSrc || Boolean(playing);
   };
-  const toggleMusic = async () => {
+  let optedOut = false;
+  const tryMusic = () => {
+    if (!audio || !musicSrc || optedOut || !audio.paused) return;
+    const attempt = audio.play();
+    attempt?.catch(() => { syncMusic(); });
+  };
+  const toggleMusic = () => {
     if (!audio || !musicSrc) return;
-    if (!audio.paused) { audio.pause(); return; }
-    try { await audio.play(); }
-    catch { musicToggle?.setAttribute('aria-label', 'Không thể phát nhạc, chạm để thử lại'); }
+    if (!audio.paused) { optedOut = true; audio.pause(); return; }
+    optedOut = false;
+    tryMusic();
   };
   musicToggle?.addEventListener('click', toggleMusic);
-  let hasOpened = false;
+  gateMusic?.addEventListener('click', (event) => { event.stopPropagation(); optedOut = false; tryMusic(); });
   let gateTimers = [];
   const clearGateTimers = () => { gateTimers.forEach(window.clearTimeout); gateTimers = []; };
   const finishGate = () => {
     if (!gate || gate.hidden) return;
     clearGateTimers();
-    gate.hidden = true;
-    gate.classList.remove('is-opening', 'is-leaving');
-    document.body.classList.remove('gate-active');
-    document.querySelector('.hero')?.classList.add('is-open');
-    hasOpened = true;
-    if (openInvitation) openInvitation.querySelector('.open-label').textContent = 'Xem lại hiệu ứng mở thiệp';
-    if (openSilent) openSilent.hidden = true;
-    openInvitation?.focus({ preventScroll: true });
+    tryMusic(); // Synchronous with the visitor's gesture when autoplay was blocked.
+    const close = () => {
+      gate.hidden = true;
+      gate.classList.remove('is-opening', 'is-opened', 'is-leaving');
+      document.body.classList.remove('gate-active');
+      background.forEach((element) => { element.inert = false; });
+      document.querySelector('.hero')?.classList.add('is-open');
+      openInvitation?.focus({ preventScroll: true });
+    };
+    gate.classList.add('is-leaving');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) close();
+    else gateTimers.push(window.setTimeout(close, 380));
   };
-  const launchGate = (withMusic) => {
+  const launchGate = () => {
     if (!gate || !gate.hidden) return;
-    // Play must be requested directly from the tap/click for mobile browsers.
-    if (withMusic && audio?.paused) toggleMusic();
-    if (!withMusic && !hasOpened && audio && !audio.paused) audio.pause();
     gate.hidden = false;
-    gate.classList.remove('is-opening', 'is-leaving');
+    gate.classList.remove('is-opening', 'is-opened', 'is-leaving');
     document.body.classList.add('gate-active');
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finishGate(); return; }
-    gate.classList.add('is-opening');
+    background.forEach((element) => { element.inert = true; });
     gateSkip?.focus({ preventScroll: true });
-    const mobile = window.matchMedia('(max-width: 760px)').matches;
-    gateTimers.push(window.setTimeout(() => gate.classList.add('is-leaving'), mobile ? 980 : 1300));
-    gateTimers.push(window.setTimeout(finishGate, mobile ? 1350 : 1700));
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) gate.classList.add('is-opened');
+    else {
+      gate.classList.add('is-opening');
+      gateTimers.push(window.setTimeout(() => gate.classList.add('is-opened'), 1450));
+    }
+    syncMusic();
   };
-  openInvitation?.addEventListener('click', () => launchGate(!hasOpened));
-  openSilent?.addEventListener('click', () => launchGate(false));
+  openInvitation?.addEventListener('click', launchGate);
   gateSkip?.addEventListener('click', finishGate);
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && gate && !gate.hidden) finishGate(); });
+  gate?.addEventListener('click', (event) => { if (event.target === gate || event.target.classList.contains('gate-petals')) finishGate(); });
+  document.addEventListener('keydown', (event) => {
+    if (!gate || gate.hidden) return;
+    if (event.key === 'Escape') finishGate();
+    if (event.key === 'Tab') {
+      const focusable = [gateSkip, gateMusic].filter((element) => element && !element.hidden);
+      const index = focusable.indexOf(document.activeElement);
+      if (event.shiftKey && index <= 0) { event.preventDefault(); focusable.at(-1)?.focus(); }
+      else if (!event.shiftKey && index === focusable.length - 1) { event.preventDefault(); focusable[0]?.focus(); }
+    }
+  });
   audio?.addEventListener('play', syncMusic);
   audio?.addEventListener('pause', syncMusic);
   audio?.addEventListener('ended', syncMusic);
   document.addEventListener('visibilitychange', () => { if (document.hidden && audio && !audio.paused) audio.pause(); });
+  launchGate();
+  tryMusic();
   for (const id of ['signature', 'closing-signature', 'footer-names']) {
     if (id === 'footer-names') setText(id, `${data.groom} & ${data.bride}`);
     else {
