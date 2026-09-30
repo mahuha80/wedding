@@ -10,6 +10,8 @@ window.WEDDING_CONTENT = {
   pageTitle: "Thành Vinh & Giang Thanh — Lời mời cưới",
   heroMessage: "Một ngày thật đẹp sẽ trọn vẹn hơn khi có bạn ở bên.",
   heroPhoto: "",
+  heroPhotoAlt: "",
+  heroPhotoPosition: "center 30%",
   // Bản thu CC0 của Membeth; thay bằng tệp có giấy phép phù hợp nếu muốn đổi nhạc.
   musicSrc: "./assets/audio/venetian-gondola-song.mp3",
   // Chỉ điền khi đã xác nhận; ví dụ "Chủ nhật, 15.11.2026".
@@ -18,14 +20,17 @@ window.WEDDING_CONTENT = {
   invitationMessage: "Chúng mình trân trọng mời bạn đến chung vui trong ngày đặc biệt. Sự hiện diện của bạn là món quà đáng quý nhất đối với chúng mình.",
   storyMessage: "Những khoảnh khắc nhỏ đã đưa chúng mình đến ngày hôm nay. Phần này sẽ được kể bằng những bức ảnh yêu thích của hai đứa.",
   photos: [
-    // { src: "./assets/photos/anh-01.jpg", alt: "Hai bạn trong bộ ảnh cưới", caption: "Những ngày bên nhau" },
-    // { src: "./assets/photos/anh-02.jpg", alt: "Khoảnh khắc tự nhiên của hai bạn", caption: "Một khoảnh khắc đáng nhớ" }
+    // { src: "./assets/photos/anh-01.jpg", alt: "Hai bạn trong bộ ảnh cưới", caption: "Những ngày bên nhau", width: 1200, height: 1500, position: "center" },
+    // { src: "./assets/photos/anh-02.jpg", alt: "Khoảnh khắc tự nhiên của hai bạn", caption: "Một khoảnh khắc đáng nhớ", width: 1200, height: 1500 }
   ],
   events: [
     {
       title: "Lễ thành hôn",
       label: "THE CEREMONY",
       date: "",
+      // ISO có múi giờ để tạo lịch chính xác, ví dụ 2026-11-15T10:00:00+07:00.
+      startAt: "",
+      endAt: "",
       arrival: "",
       start: "",
       venue: "",

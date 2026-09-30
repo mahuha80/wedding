@@ -16,6 +16,10 @@
 
   document.title = data.pageTitle || `${data.groom} & ${data.bride} — Lời mời cưới`;
   document.querySelector('meta[name="description"]')?.setAttribute('content', `Lời mời cưới của ${data.groom} và ${data.bride}.`);
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', data.heroMessage || `Lời mời cưới của ${data.groom} và ${data.bride}.`);
+  const initial = (name) => [...(name || '')].find((letter) => /[\p{L}\p{N}]/u.test(letter))?.toLocaleUpperCase('vi-VN') || '';
+  for (const [id, value] of [['brand-groom-initial', initial(data.groom)], ['brand-bride-initial', initial(data.bride)], ['invite-groom-initial', initial(data.groom)], ['invite-bride-initial', initial(data.bride)], ['seal-groom-initial', initial(data.groom)], ['seal-bride-initial', initial(data.bride)]]) setText(id, value);
   setText('bride-name', data.bride);
   setText('groom-name', data.groom);
   setText('hero-message', data.heroMessage);
@@ -71,7 +75,7 @@
     musicToggle?.setAttribute('aria-pressed', String(Boolean(playing)));
     musicToggle?.setAttribute('aria-label', playing ? 'Tắt nhạc nền' : 'Bật nhạc nền');
     if (musicLabel) musicLabel.textContent = playing ? 'Tắt nhạc' : 'Bật nhạc';
-    if (gateMusic) gateMusic.hidden = !musicSrc || Boolean(playing);
+    if (gateMusic) gateMusic.hidden = !musicSrc || Boolean(playing) || Boolean(gate?.classList.contains('is-expanding') || gate?.classList.contains('is-expanded'));
   };
   let optedOut = false;
   const tryMusic = () => {
@@ -86,13 +90,11 @@
     tryMusic();
   };
   musicToggle?.addEventListener('click', toggleMusic);
-  gateMusic?.addEventListener('click', (event) => { event.stopPropagation(); optedOut = false; tryMusic(); });
   let gateTimers = [];
   const clearGateTimers = () => { gateTimers.forEach(window.clearTimeout); gateTimers = []; };
-  const finishGate = (fromGesture = false) => {
+  const finishGate = () => {
     if (!gate || gate.hidden || gate.classList.contains('is-leaving')) return;
     clearGateTimers();
-    if (fromGesture) tryMusic();
     let completed = false;
     const complete = () => {
       if (completed) return;
@@ -105,6 +107,7 @@
       if (gateContinue) gateContinue.hidden = true;
       document.body.classList.remove('gate-active', 'gate-leaving');
       background.forEach((element) => { element.inert = false; });
+      try { sessionStorage.setItem('wedding-invitation-opened', 'yes'); } catch {}
       hero?.classList.add('is-open');
       hero?.classList.remove('is-revealing');
       hero?.focus({ preventScroll: true });
@@ -125,11 +128,17 @@
     const inset = window.innerWidth <= 760 ? 10 : 24;
     return { left: `${inset}px`, top: `${inset}px`, width: `${window.innerWidth - inset * 2}px`, height: `${window.innerHeight - inset * 2}px` };
   };
+  window.addEventListener('resize', () => {
+    if (gate && !gate.hidden && (gate.classList.contains('is-expanding') || gate.classList.contains('is-expanded'))) {
+      Object.assign(sheet.style, fullSheetBounds());
+    }
+  });
   const holdInvitation = () => {
     if (!gate || gate.hidden || gate.classList.contains('is-leaving')) return;
     gate.classList.add('is-expanded');
     sheet?.removeAttribute('aria-hidden');
     if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Vào website ';
+    if (gateMusic) gateMusic.hidden = true;
     if (gateContinue) { gateContinue.hidden = false; gateContinue.focus({ preventScroll: true }); }
   };
   const expandCard = () => {
@@ -145,13 +154,15 @@
     }));
     gateTimers.push(window.setTimeout(holdInvitation, 1000));
   };
-  const launchGate = () => {
-    if (!gate || !gate.hidden) return;
+  const launchGate = (withMusic = false) => {
+    if (!gate || gate.hidden || gate.classList.contains('is-opening') || gate.classList.contains('is-expanding') || gate.classList.contains('is-expanded') || gate.classList.contains('is-leaving')) return;
     gate.hidden = false;
     hero?.classList.remove('is-revealing');
     wheelTravel = 0;
     gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
-    if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Bỏ qua hiệu ứng ';
+    if (gateMusic) gateMusic.hidden = false;
+    if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Mở thiệp yên lặng ';
+    if (withMusic) { optedOut = false; tryMusic(); }
     document.body.classList.add('gate-active');
     document.body.classList.remove('gate-leaving');
     background.forEach((element) => { element.inert = true; });
@@ -163,14 +174,24 @@
     }
     else {
       gate.classList.add('is-opening');
-      gateTimers.push(window.setTimeout(expandCard, 1450));
+      gateTimers.push(window.setTimeout(expandCard, 720));
     }
     syncMusic();
   };
-  openInvitation?.addEventListener('click', launchGate);
-  gateSkip?.addEventListener('click', () => finishGate(true));
-  gateContinue?.addEventListener('click', () => finishGate(true));
-  gate?.addEventListener('click', (event) => { if (event.target === gate || event.target.classList.contains('gate-petals')) finishGate(true); });
+  openInvitation?.addEventListener('click', () => {
+    if (gate.hidden) {
+      try { sessionStorage.removeItem('wedding-invitation-opened'); } catch {}
+      gate.hidden = false;
+      gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
+      document.body.classList.add('gate-active');
+      background.forEach((element) => { element.inert = true; });
+      gateSkip?.focus({ preventScroll: true });
+    }
+    launchGate(false);
+  });
+  gateSkip?.addEventListener('click', () => gate.classList.contains('is-expanded') ? finishGate() : launchGate(false));
+  gateMusic?.addEventListener('click', () => launchGate(true));
+  gateContinue?.addEventListener('click', () => finishGate());
   gate?.addEventListener('wheel', (event) => {
     if (!gate.classList.contains('is-expanded')) return;
     event.preventDefault();
@@ -189,9 +210,9 @@
   });
   document.addEventListener('keydown', (event) => {
     if (!gate || gate.hidden) return;
-    if (event.key === 'Escape') finishGate(true);
+    if (event.key === 'Escape') finishGate();
     if (gate.classList.contains('is-expanded') && ['ArrowDown', 'PageDown', ' '].includes(event.key)) {
-      event.preventDefault(); finishGate(true); return;
+      event.preventDefault(); finishGate(); return;
     }
     if (event.key === 'Tab') {
       const focusable = [gateSkip, gateMusic, gateContinue].filter((element) => element && !element.hidden);
@@ -203,9 +224,34 @@
   audio?.addEventListener('play', syncMusic);
   audio?.addEventListener('pause', syncMusic);
   audio?.addEventListener('ended', syncMusic);
-  document.addEventListener('visibilitychange', () => { if (document.hidden && audio && !audio.paused) audio.pause(); });
-  launchGate();
-  tryMusic();
+  audio?.addEventListener('error', () => {
+    if (musicLabel) musicLabel.textContent = 'Nhạc chưa khả dụng';
+    musicToggle?.setAttribute('aria-label', 'Nhạc chưa khả dụng');
+    musicToggle?.setAttribute('aria-pressed', 'false');
+  });
+  let pausedForHiddenTab = false;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && audio && !audio.paused) { pausedForHiddenTab = true; audio.pause(); }
+    else if (!document.hidden && pausedForHiddenTab) { pausedForHiddenTab = false; }
+  });
+  const deepLink = Boolean(window.location.hash && document.querySelector(window.location.hash));
+  let alreadyOpened = false;
+  try { alreadyOpened = sessionStorage.getItem('wedding-invitation-opened') === 'yes'; } catch {}
+  if (alreadyOpened || deepLink) gate.hidden = true;
+  else {
+    gate.hidden = false;
+    document.body.classList.add('gate-active');
+    background.forEach((element) => { element.inert = true; });
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      Object.assign(sheet.style, fullSheetBounds());
+      gate.classList.add('is-expanding', 'is-expanded');
+      sheet?.removeAttribute('aria-hidden');
+      if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Vào website ';
+      if (gateMusic) gateMusic.hidden = true;
+      gateSkip?.focus({ preventScroll: true });
+      if (gateContinue) gateContinue.hidden = false;
+    } else gateSkip?.focus({ preventScroll: true });
+  }
   for (const id of ['signature', 'closing-signature', 'footer-names']) {
     if (id === 'footer-names') setText(id, `${data.groom} & ${data.bride}`);
     else {
@@ -219,8 +265,13 @@
   if (data.heroPhoto?.trim() && heroFrame) {
     const image = make('img', 'hero-photo');
     image.src = data.heroPhoto;
-    image.alt = `Ảnh cưới của ${data.groom} và ${data.bride}`;
+    image.alt = data.heroPhotoAlt || `Ảnh cưới của ${data.groom} và ${data.bride}`;
+    image.width = data.heroPhotoWidth || 1200;
+    image.height = data.heroPhotoHeight || 1500;
     image.fetchPriority = 'high';
+    image.style.objectPosition = data.heroPhotoPosition || 'center';
+    heroFrame.setAttribute('role', 'img');
+    heroFrame.setAttribute('aria-label', image.alt);
     image.addEventListener('load', () => heroFrame.classList.add('has-photo'));
     image.addEventListener('error', () => { heroFrame.classList.remove('has-photo'); image.remove(); });
     heroFrame.prepend(image);
@@ -268,13 +319,93 @@
       const figure = make('figure', `photo-card ${index % 3 === 0 ? 'photo-card-large' : 'photo-card-small'}`);
       const image = make('img', 'gallery-photo');
       image.src = photo.src;
-      image.alt = photo.alt || `Ảnh của ${data.groom} và ${data.bride}`;
+    image.alt = photo.alt || `Ảnh của ${data.groom} và ${data.bride}`;
+      image.width = photo.width || 1200;
+      image.height = photo.height || 1500;
+      if (photo.srcSet) image.srcset = photo.srcSet;
+      if (photo.sizes) image.sizes = photo.sizes;
       image.loading = 'lazy';
       image.decoding = 'async';
+      image.style.objectPosition = photo.position || 'center';
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', `Xem ảnh lớn: ${image.alt}`);
       figure.append(image, make('figcaption', '', photo.caption || 'Khoảnh khắc của chúng mình'));
       photoGrid.append(figure);
     });
   }
+  const galleryImages = [...document.querySelectorAll('.gallery-photo')];
+  galleryImages.forEach((image) => image.addEventListener('error', () => {
+    const figure = image.closest('figure');
+    const fallback = make('div', 'photo-error-card', 'Ảnh đang được chuẩn bị');
+    image.replaceWith(fallback);
+    const index = galleryImages.indexOf(image);
+    if (index >= 0) galleryImages.splice(index, 1);
+    if (galleryTrigger === image) galleryTrigger = null;
+  }));
+  const galleryDialog = document.getElementById('gallery-dialog');
+  const dialogImage = document.getElementById('gallery-dialog-image');
+  const dialogCaption = document.getElementById('gallery-dialog-caption');
+  let galleryIndex = 0;
+  let galleryTrigger = null;
+  const showGalleryImage = (index) => {
+    if (!galleryImages.length) return;
+    galleryIndex = (index + galleryImages.length) % galleryImages.length;
+    const image = galleryImages[galleryIndex];
+    dialogImage.src = image.currentSrc || image.src;
+    dialogImage.alt = image.alt;
+    dialogCaption.textContent = image.closest('figure')?.querySelector('figcaption')?.textContent || '';
+    const controlsHidden = galleryImages.length < 2;
+    document.getElementById('gallery-previous').hidden = controlsHidden;
+    document.getElementById('gallery-next').hidden = controlsHidden;
+  };
+  const openGallery = (image) => {
+    galleryTrigger = image;
+    showGalleryImage(galleryImages.indexOf(image));
+    galleryDialog?.showModal();
+  };
+  galleryImages.forEach((image, index) => {
+    image.addEventListener('click', () => openGallery(image));
+    image.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openGallery(image); }
+    });
+  });
+  document.getElementById('gallery-close')?.addEventListener('click', () => galleryDialog.close());
+  document.getElementById('gallery-previous')?.addEventListener('click', () => showGalleryImage(galleryIndex - 1));
+  document.getElementById('gallery-next')?.addEventListener('click', () => showGalleryImage(galleryIndex + 1));
+  galleryDialog?.addEventListener('close', () => galleryTrigger?.focus());
+  galleryDialog?.addEventListener('click', (event) => { if (event.target === galleryDialog) galleryDialog.close(); });
+  let galleryTouchStart = null;
+  galleryDialog?.addEventListener('touchstart', (event) => { galleryTouchStart = event.touches[0]?.clientX ?? null; }, { passive: true });
+  galleryDialog?.addEventListener('touchend', (event) => {
+    if (galleryTouchStart === null || galleryImages.length < 2) return;
+    const delta = event.changedTouches[0].clientX - galleryTouchStart;
+    if (Math.abs(delta) > 45) showGalleryImage(galleryIndex + (delta < 0 ? 1 : -1));
+    galleryTouchStart = null;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!galleryDialog?.open) return;
+    if (event.key === 'ArrowRight') showGalleryImage(galleryIndex + 1);
+    if (event.key === 'ArrowLeft') showGalleryImage(galleryIndex - 1);
+  });
+  (data.events || []).forEach((event, index) => {
+    const card = eventList?.children[index];
+    if (!card) return;
+    const body = card.querySelector('.event-card-body');
+    const start = new Date(event.startAt);
+    const end = new Date(event.endAt);
+    if (event.startAt && event.endAt && Number.isFinite(start.valueOf()) && Number.isFinite(end.valueOf()) && end > start) {
+      const pad = (value) => String(value).padStart(2, '0');
+      const format = (date) => `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
+      const escapeIcs = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, '\\$&');
+      const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Wedding Invitation//VI', 'BEGIN:VEVENT', `UID:${index + 1}-${start.valueOf()}@wedding`, `DTSTAMP:${format(new Date())}`, `DTSTART:${format(start)}`, `DTEND:${format(end)}`, `SUMMARY:${escapeIcs(event.title)}`, `LOCATION:${escapeIcs([event.venue, event.address].filter(Boolean).join(', '))}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      const calendar = make('a', 'event-map event-calendar', 'Lưu vào lịch ↓');
+      calendar.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+      calendar.download = 'loi-moi-cuoi.ics';
+      calendar.style.minHeight = '48px';
+      body.append(calendar);
+    }
+  });
   if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const targets = document.querySelectorAll('.invitation-body, .events-heading, .event-card, .story-heading, .photo-card, .closing h2');
     const observer = new IntersectionObserver((entries) => {
