@@ -93,21 +93,33 @@
     if (!gate || gate.hidden || gate.classList.contains('is-leaving')) return;
     clearGateTimers();
     if (fromGesture) tryMusic();
+    let completed = false;
     const complete = () => {
+      if (completed) return;
+      completed = true;
+      sheet?.removeEventListener('transitionend', onSheetEnd);
+      clearGateTimers();
       gate.hidden = true;
       gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
       if (sheet) { sheet.removeAttribute('style'); sheet.setAttribute('aria-hidden', 'true'); }
       if (gateContinue) gateContinue.hidden = true;
-      document.body.classList.remove('gate-active');
+      document.body.classList.remove('gate-active', 'gate-leaving');
       background.forEach((element) => { element.inert = false; });
       hero?.classList.add('is-open');
       hero?.classList.remove('is-revealing');
       hero?.focus({ preventScroll: true });
     };
+    const onSheetEnd = (event) => {
+      if (event.target === sheet && event.propertyName === 'transform') complete();
+    };
     hero?.classList.add('is-revealing');
     gate.classList.add('is-leaving');
+    document.body.classList.add('gate-leaving');
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) complete();
-    else gateTimers.push(window.setTimeout(complete, 1000));
+    else {
+      sheet?.addEventListener('transitionend', onSheetEnd);
+      gateTimers.push(window.setTimeout(complete, 1250));
+    }
   };
   const fullSheetBounds = () => {
     const inset = window.innerWidth <= 760 ? 10 : 24;
@@ -141,6 +153,7 @@
     gate.classList.remove('is-opening', 'is-expanding', 'is-expanded', 'is-leaving');
     if (gateSkip?.firstChild) gateSkip.firstChild.textContent = 'Bỏ qua hiệu ứng ';
     document.body.classList.add('gate-active');
+    document.body.classList.remove('gate-leaving');
     background.forEach((element) => { element.inert = true; });
     gateSkip?.focus({ preventScroll: true });
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
