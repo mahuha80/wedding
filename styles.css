@@ -408,3 +408,40 @@ h2 em { font-weight: 400; color: var(--olive); }
   h2 { font-size: 40px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } .reveal-pending { opacity: 1 !important; transform: none !important; } .site-glints { display: none; } }
+
+/* Ivory editorial finish: champagne structure with a restrained burgundy signature. */
+:root { --wine: #743b43; }
+.brand-mark, .ampersand, .eyebrow, .section-index, .event-number, .event-date,
+.hero-vertical, .closing-ornament { color: var(--wine); }
+.dot { background: var(--wine); }
+.hero-rule, .hero-scroll span { background: var(--champagne); }
+.hero-image-frame { box-shadow: 0 30px 70px #233d3226, 12px 12px 0 -4px var(--paper), 13px 13px 0 -4px #d8c9aa; }
+.hero-image-frame::after { inset: 18px; }
+.invitation-art { border-color: #c9a477; color: var(--wine); background: linear-gradient(145deg, #fffefa, #f6eee6); }
+.event-card { border-color: #d7cbb9; transition: border-color .25s, box-shadow .25s, transform .25s; }
+.event-card:hover { border-color: #b99a62; box-shadow: 0 18px 38px #233d3214; transform: translateY(-3px); }
+.event-card-head { border-bottom-color: #e6dacc; }
+.story { background: linear-gradient(180deg, #e8efe7 0%, #f1f0e8 100%); }
+.photo-card-large .gallery-photo { box-shadow: 12px 12px 0 -4px #f6f2e8, 13px 13px 0 -4px #d8c9aa; }
+.countdown { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; padding-top: 33px; padding-bottom: 33px; background: var(--wine); color: #fffefa; }
+.countdown .eyebrow { color: #e3cfaa; }
+.countdown-clock { display: flex; align-items: center; gap: clamp(16px, 3vw, 42px); }
+.countdown-clock div { min-width: 54px; display: grid; gap: 2px; text-align: center; }
+.countdown-clock span { font: 400 clamp(24px, 3vw, 38px)/1 var(--serif); font-variant-numeric: tabular-nums; }
+.countdown-clock small { color: #f0dfbf; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.countdown-caption { margin: 0; color: #f5eadd; font: italic 16px var(--serif); text-align: right; }
+.placeholder-monogram { display: flex; align-items: center; gap: .11em; }
+.placeholder-monogram i { margin: 0 .1em; color: #e8d5af; }
+@media (max-width: 760px) {
+  .hero-image-frame { box-shadow: 0 18px 34px #233d321c, 7px 7px 0 -3px var(--paper), 8px 8px 0 -3px #d8c9aa; }
+  .countdown { grid-template-columns: 1fr; justify-items: center; gap: 14px; padding-top: 28px; padding-bottom: 28px; }
+  .countdown-caption { text-align: center; }
+  .countdown-clock { gap: clamp(22px, 8vw, 38px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .event-card { transition: none; }
+}
+
+.open-invitation { background: var(--wine); border-color: var(--wine); }
+.open-invitation:hover { background: #5d3037; border-color: #5d3037; }
+.event-card:focus-within { border-color: #b99a62; box-shadow: 0 18px 38px #233d3214; }
