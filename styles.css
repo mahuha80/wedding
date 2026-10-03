@@ -177,7 +177,7 @@ h2 em { font-weight: 400; color: var(--olive); }
 .is-expanded .sheet-recipient:not([hidden]) { display: block; margin: 0; color: var(--olive); font: italic clamp(15px, 1.5vw, 20px)/1.55 var(--serif); }
 .sheet-recipient span { display: inline-block; margin-top: 4px; color: var(--ink); font-size: 1.25em; font-style: normal; }
 .is-expanded .gate-transition-sheet .gate-card-kicker, .is-expanded .gate-transition-sheet .gate-card-foot { font-size: 11px; }
-.is-expanded .gate-actions { position: fixed; z-index: 11; top: max(36px, env(safe-area-inset-top)); right: max(40px, env(safe-area-inset-right)); opacity: 1; gap: 10px; }
+.is-expanded .gate-actions { position: fixed; z-index: 11; top: max(24px, env(safe-area-inset-top)); right: max(24px, env(safe-area-inset-right)); opacity: 1; gap: 10px; }
 .is-expanded .gate-actions button { margin-top: 0; }
 .gate-continue { position: fixed; z-index: 12; left: 50%; bottom: max(48px, calc(env(safe-area-inset-bottom) + 30px)); transform: translateX(-50%); min-height: 48px; padding: 10px 14px; border: 0; border-bottom: 1px solid #8fa390; background: transparent; color: var(--olive); white-space: nowrap; font: 500 12px var(--sans); letter-spacing: .1em; cursor: pointer; }
 .gate-continue:hover, .gate-continue:focus-visible { color: var(--ink); border-bottom: 2px solid var(--olive); }
@@ -250,6 +250,32 @@ h2 em { font-weight: 400; color: var(--olive); }
 .gallery-next { grid-column: 3; grid-row: 1; }
 .event-calendar { margin-left: 18px; }
 .event-card-body .event-map { display: inline-flex; align-items: center; }
+
+/* Compact, consistent editorial rhythm across invitation sections. */
+.section-shell { padding-left: clamp(20px, 6vw, 96px); padding-right: clamp(20px, 6vw, 96px); }
+.hero { max-width: 1440px; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); }
+.hero-copy { justify-content: center; padding-top: clamp(48px, 5vw, 76px); padding-bottom: 76px; }
+.hero-copy, .hero { min-height: min(740px, calc(100svh - 92px)); }
+.hero h1 { white-space: normal; }
+.invitation { min-height: auto; padding-top: clamp(76px, 9vw, 120px); padding-bottom: clamp(76px, 9vw, 120px); }
+.events, .story { padding-top: clamp(78px, 9vw, 112px); padding-bottom: clamp(82px, 9vw, 120px); }
+.events-heading { padding-bottom: 48px; }
+.photo-grid { margin-top: 54px; }
+.closing { min-height: 500px; }
+.gate-transition-sheet { transition: transform .9s cubic-bezier(.22, 1, .36, 1), opacity .75s ease; }
+.invitation-gate.is-leaving .gate-transition-sheet { opacity: 0; }
+.is-expanding .gate-scene, .is-expanding .gate-heading, .is-expanding .gate-caption, .is-expanding .gate-actions { opacity: 0; transition: opacity .24s ease; }
+.is-expanding .gate-transition-sheet { display: flex; }
+.is-expanded .gate-actions { opacity: 1; }
+.is-expanded .gate-transition-sheet { justify-content: center; gap: clamp(20px, 4vh, 42px); }
+.is-expanded .gate-transition-sheet strong { font-size: clamp(40px, 6vw, 76px); line-height: 1.16; text-wrap: balance; }
+.is-expanded .sheet-recipient:not([hidden]) { max-width: 90%; font-size: clamp(17px, 2vw, 24px); text-wrap: balance; }
+.sheet-recipient span { overflow-wrap: anywhere; }
+.gate-continue { padding: 12px 22px; border: 1px solid #c8b58d; border-radius: 999px; background: var(--ivory); box-shadow: 0 6px 22px #233d321a; }
+.gate-continue:focus-visible { outline: 2px solid var(--champagne); outline-offset: 4px; }
+.gate-skip[hidden] { display: none; }
+.gate-music[hidden] { display: none; }
+.music-toggle { z-index: 12; }
 
 @media (max-width: 1100px) {
   .site-header { height: 76px; }
@@ -349,6 +375,22 @@ h2 em { font-weight: 400; color: var(--olive); }
   .is-opening .gate-flap { animation-duration: .46s; }
   .is-opening .gate-card { animation-duration: .66s; animation-delay: .33s; }
   .footer { flex-direction: column; padding: 27px 24px calc(80px + env(safe-area-inset-bottom)); gap: 8px; }
+}
+@media (max-width: 760px) {
+  .hero, .hero-copy { min-height: auto; }
+  .hero-copy { padding: clamp(42px, 8vw, 62px) 25px 34px; }
+  .hero-copy > h1 { margin-top: 22px; }
+  .hero-copy > .hero-meta { margin-top: 16px; }
+  .hero-visual { padding: 12px 24px 28px; }
+  .hero-image-frame { aspect-ratio: 4 / 3; }
+  .invitation { padding-top: 70px; padding-bottom: 74px; }
+  .events, .story { padding-top: 74px; padding-bottom: 82px; }
+  .events-heading { padding: 24px 0 36px; }
+  .photo-grid { margin-top: 36px; }
+  .is-expanded .gate-transition-sheet { gap: clamp(14px, 3vh, 26px); padding: 58px 24px 90px; }
+  .is-expanded .gate-transition-sheet strong { font-size: clamp(34px, 9vw, 54px); }
+  .is-expanded .gate-actions { display: flex; top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); }
+  .gate-continue { bottom: calc(24px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 760px) and (max-height: 650px) {
   .is-expanded .gate-transition-sheet { gap: 10px; padding-top: 45px; padding-bottom: 76px; }

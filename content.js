@@ -12,8 +12,13 @@ window.WEDDING_CONTENT = {
   heroPhoto: "",
   heroPhotoAlt: "",
   heroPhotoPosition: "center 30%",
-  // Bản thu CC0 của Membeth; thay bằng tệp có giấy phép phù hợp nếu muốn đổi nhạc.
-  musicSrc: "./assets/audio/venetian-gondola-song.mp3",
+  // Daily Beetle của Kevin MacLeod, dùng theo CC BY 4.0; credit hiển thị ở footer.
+  musicSrc: "./assets/audio/daily-beetle.mp3",
+  musicTitle: "Daily Beetle",
+  musicArtist: "Kevin MacLeod",
+  musicFeaturing: "Brett VanDonsel",
+  musicLicense: "CC BY 4.0",
+  musicCreditUrl: "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500025",
   // Chỉ điền khi đã xác nhận; ví dụ "Chủ nhật, 15.11.2026".
   dateLine: "",
   locationLine: "",
