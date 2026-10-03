@@ -4,6 +4,9 @@ Static, responsive wedding invitation for Thành Vinh and Giang Thanh. Published
 
 ## Update content
 
+A burgundy-accented countdown appears automatically when an upcoming event has a valid timezone-aware `startAt` value. Leave `startAt` blank until the ceremony date and time are confirmed; the countdown stays hidden.
+
+
 Edit only `content.js` for the names, wording, date, venue, event details and photo paths. Empty details appear as an update notice; no date or venue is invented. Put your own photos in a new `assets/photos/` folder and set `heroPhoto` and `photos`. The hero portrait is cropped to 4:5 on mobile; keep both faces in the central safe area. Update `pageTitle` if the names change.
 
 The first visit presents an envelope. Guests choose “Mở thiệp yên lặng” or “Mở thiệp cùng nhạc”; the envelope opens into a personalized card and stays open until the guest chooses “Vào xem lời mời”, scrolls down, swipes up, or presses Down/PageDown/Space. Escape opens the site directly. The viewed state is remembered per recipient name for the current browser session; “Mở lại thiệp mời” replays it. Reduced-motion visitors see the expanded invitation immediately.
