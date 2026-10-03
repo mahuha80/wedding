@@ -25,7 +25,7 @@
     musicCredit.textContent = `“${data.musicTitle}” · ${performers} · ${data.musicLicense || ''}`.trim();
   }
   const initial = (name) => [...(name || '')].find((letter) => /[\p{L}\p{N}]/u.test(letter))?.toLocaleUpperCase('vi-VN') || '';
-  for (const [id, value] of [['brand-groom-initial', initial(data.groom)], ['brand-bride-initial', initial(data.bride)], ['invite-groom-initial', initial(data.groom)], ['invite-bride-initial', initial(data.bride)], ['seal-groom-initial', initial(data.groom)], ['seal-bride-initial', initial(data.bride)]]) setText(id, value);
+  for (const [id, value] of [['brand-groom-initial', initial(data.groom)], ['brand-bride-initial', initial(data.bride)], ['invite-groom-initial', initial(data.groom)], ['invite-bride-initial', initial(data.bride)], ['seal-groom-initial', initial(data.groom)], ['seal-bride-initial', initial(data.bride)], ['hero-groom-initial', initial(data.groom)], ['hero-bride-initial', initial(data.bride)]]) setText(id, value);
   setText('bride-name', data.bride);
   setText('groom-name', data.groom);
   setText('hero-message', data.heroMessage);
@@ -37,6 +37,27 @@
   }
   setText('invitation-message', data.invitationMessage);
   setText('story-message', data.storyMessage);
+
+  const countdown = document.getElementById('wedding-countdown');
+  const ceremonyStart = Date.parse(data.events?.find((event) => event.startAt?.trim())?.startAt || '');
+  if (countdown && Number.isFinite(ceremonyStart) && ceremonyStart > Date.now()) {
+    countdown.hidden = false;
+    const updateCountdown = () => {
+      const remaining = ceremonyStart - Date.now();
+      if (remaining <= 0) { countdown.hidden = true; return; }
+      const values = {
+        days: Math.floor(remaining / 86400000),
+        hours: Math.floor((remaining % 86400000) / 3600000),
+        minutes: Math.floor((remaining % 3600000) / 60000)
+      };
+      for (const [unit, value] of Object.entries(values)) {
+        const element = countdown.querySelector(`[data-countdown="${unit}"]`);
+        if (element) element.textContent = String(value).padStart(2, '0');
+      }
+    };
+    updateCountdown();
+    window.setInterval(updateCountdown, 60000);
+  }
   const requestedName = new URLSearchParams(window.location.search).get('name');
   const recipientName = requestedName?.normalize('NFC').trim().replace(/^['“”\"]+|['“”\"]+$/g, '').replace(/\s+/g, ' ');
   const safeRecipientName = recipientName ? Array.from(recipientName).slice(0, 60).join('') : '';
@@ -89,14 +110,35 @@
     }
   };
   let optedOut = false;
+  let audioFadeFrame = 0;
+  const fadeAudio = (target, duration, pauseAtEnd = false) => {
+    if (!audio) return;
+    cancelAnimationFrame(audioFadeFrame);
+    const startVolume = audio.volume;
+    const startTime = performance.now();
+    const step = (now) => {
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = progress * (2 - progress);
+      audio.volume = startVolume + (target - startVolume) * eased;
+      if (progress < 1) audioFadeFrame = requestAnimationFrame(step);
+      else {
+        audio.volume = target;
+        if (pauseAtEnd) audio.pause();
+      }
+    };
+    audioFadeFrame = requestAnimationFrame(step);
+  };
+
   const tryMusic = () => {
     if (!audio || !musicSrc || optedOut || !audio.paused) return;
+    audio.volume = 0;
     const attempt = audio.play();
-    attempt?.catch(() => { syncMusic(); });
+    attempt?.then(() => fadeAudio(0.32, 1300));
+    attempt?.catch(() => { audio.volume = 0.32; syncMusic(); });
   };
   const toggleMusic = () => {
     if (!audio || !musicSrc) return;
-    if (!audio.paused) { optedOut = true; audio.pause(); return; }
+    if (!audio.paused) { optedOut = true; fadeAudio(0, 550, true); return; }
     optedOut = false;
     tryMusic();
   };
